@@ -18,6 +18,12 @@ function Header() {
         onClick={() => history.push('/Users')}>
             Users
         </Button>
+        <Button 
+        colorScheme="green" 
+        size="md"
+        onClick={() => history.push('/Settings')}>
+            Settings
+        </Button>
       </HStack>
     </div>
   );
