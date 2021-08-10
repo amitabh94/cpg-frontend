@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {useHistory} from "react-router-dom";
 import {
   Flex,
   Heading,
@@ -26,6 +27,8 @@ function Login(){
   
     const handleShowClick = () => setShowPassword(!showPassword);
 
+    const history = useHistory();
+
     return (
         <Flex
       flexDirection="column"
@@ -41,8 +44,8 @@ function Login(){
         justifyContent="center"
         alignItems="center"
       >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">Welcome</Heading>
+        <Avatar bg="blue.600" />
+        <Heading color="blue.600">Welcome</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
           <form>
             <Stack
@@ -85,8 +88,9 @@ function Login(){
                 borderRadius={0}
                 type="submit"
                 variant="solid"
-                colorScheme="teal"
+                colorScheme="blue"
                 width="full"
+                onClick={() => history.push('/Dashboard')}
               >
                 Login
               </Button>
@@ -96,7 +100,7 @@ function Login(){
       </Stack>
       <Box>
         New to us?{" "}
-        <Link color="teal.500" href="#">
+        <Link color="blue.600" href="#">
           Sign Up
         </Link>
       </Box>
