@@ -4,6 +4,7 @@ import SettingsContent from "./SettingsContent/SettingsContent";
 import UsersContent from "./UsersContent/UsersContent";
 import Login from "./Login/Login"
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Children } from "react";
 function App() {
   return (
     <div className="App">
@@ -11,7 +12,7 @@ function App() {
         <Header/>
         <Switch>
           <Route path="/Dashboard">
-            <Dashboard />
+            <Dashboard/>
           </Route>
           <Route path="/Users">
             <UsersContent />

@@ -37,6 +37,10 @@ import {
   FiAirplay,
   FiDroplet,
   FiTablet,
+  FiDatabase,
+  FiFigma,
+  FiFilm,
+  FiCodesandbox,
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
@@ -48,7 +52,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome },
   { name: 'Transaction History', icon: FiClock },
-  { name: 'Merchant Deposit', icon: FiTablet },
+  { name: 'Merchant Deposit', icon: FiCodesandbox },
   { name: 'Player Transfer', icon: FiTrendingUp },
   { name: 'Settings', icon: FiSettings },
 ];
@@ -107,6 +111,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       {LinkItems.map((link) => (
         <NavItem key={link.name} icon={link.icon}>
           {link.name}
+          
         </NavItem>
       ))}
     </Box>
