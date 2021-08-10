@@ -182,7 +182,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         fontSize="2xl"
         fontFamily="monospace"
         fontWeight="bold">
-        Logo
+        CPG Merchant
       </Text>
 
       <HStack spacing={{ base: '0', md: '6' }}>
