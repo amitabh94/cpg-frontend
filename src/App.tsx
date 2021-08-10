@@ -1,6 +1,7 @@
 import Header from "./Header";
 import Dashboard from "./DashboardContent/DashboardContent";
 import SettingsContent from "./SettingsContent/SettingsContent";
+import UsersContent from "./UsersContent/UsersContent";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 function App() {
   return (
@@ -10,6 +11,9 @@ function App() {
         <Switch>
           <Route path="/Dashboard">
             <Dashboard />
+          </Route>
+          <Route path="/Users">
+            <UsersContent />
           </Route>
           <Route path="/Settings">
             <SettingsContent />

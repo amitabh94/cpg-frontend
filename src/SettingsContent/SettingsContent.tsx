@@ -20,7 +20,7 @@ function SettingsContent(){
     return (
         <div>
             <br/> 
-            <Heading as="h3" size="lg"> Users </Heading>
+            <Heading as="h3" size="lg"> Settings </Heading>
             <br/>
             <Stack>
             <HStack spacing={3}>
