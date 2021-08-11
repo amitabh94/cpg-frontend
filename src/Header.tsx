@@ -41,7 +41,7 @@ function Header() {
         href={'#'}
         
         onClick={() => history.push('/Dashboard')}>
-            Dashboard
+            Merchant Dashboard
         </Button>
         <Button 
         as={'a'}

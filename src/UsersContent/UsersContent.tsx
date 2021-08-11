@@ -342,9 +342,12 @@ function Users(){
     return(
         <div>
             <br/> 
-            <Heading as="h3" size="lg"> Users </Heading>
+            <Heading as="h3" size="lg" textAlign={'center'}> Users </Heading>
             <br/>
-            <Stack direction="column">
+            <Stack direction="column"
+            textAlign={'center'}
+            align={'center'}
+            >
                 <Heading as="h4" size="md">All players</Heading>
                 {/* <HStack>
                     <Input placeholder="username" size="md" />

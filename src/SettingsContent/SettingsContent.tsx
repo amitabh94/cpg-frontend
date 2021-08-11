@@ -1,5 +1,10 @@
-import {HStack, Input, Heading, Text, Stack, Radio, RadioGroup, Button} from "@chakra-ui/react";
+import {HStack, Input, Heading, Text, Stack, Radio, RadioGroup, Button,  InputLeftElement, chakra} from "@chakra-ui/react";
 import { useState } from "react";
+
+import { FaUserAlt, FaLock } from "react-icons/fa";
+
+const CFaUserAlt = chakra(FaUserAlt);
+const CFaLock = chakra(FaLock);
 
 
 function SettingsContent(){
@@ -25,6 +30,12 @@ function SettingsContent(){
             <Stack>
             <HStack spacing={3}>
                 <Text fontSize="lg">Merchant Withdrawal Address</Text>
+                {/* <InputLeftElement
+                    pointerEvents="none"
+                    color="gray.300"
+                    children={<CFaLock color="gray.300" />}
+                  /> */}
+
                 <Input placeholder="Insert Address." size="md" />
             </HStack>
             <HStack spacing={3}>
