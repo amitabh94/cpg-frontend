@@ -11,6 +11,9 @@ function App() {
       <Router>
         <Header/>
         <Switch>
+          <Route path="/Login">
+              <Login />
+          </Route>
           <Route path="/Dashboard">
             <Dashboard/>
           </Route>
@@ -20,9 +23,7 @@ function App() {
           <Route path="/Settings">
             <SettingsContent />
           </Route>
-          <Route path="/Login">
-            <Login />
-          </Route>
+          
         </Switch>
       </Router>
     </div>

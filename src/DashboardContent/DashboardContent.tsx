@@ -1,4 +1,6 @@
 import React, { ReactNode } from 'react';
+import { request, gql } from 'graphql-request'
+
 import {useHistory} from "react-router-dom";
 import {
   IconButton,
@@ -45,6 +47,8 @@ import {
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 
+import { query_merchant_wallets, query_merchant_transactions} from '../database/database'
+
 interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -57,9 +61,40 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Settings', icon: FiSettings },
 ];
 
+async function test() {
+  console.log('function called')
+  const endpoint = 'http://localhost:8090/graphql'
+
+  const query = gql`
+  query MyQuery {
+users(condition: {username: "test-user-1"}) {
+  nodes {
+    username
+    userId
+  }
+}
+}
+  `
+  const variables = {
+    username: 'username',
+  }
+  try {
+      const data = await request(endpoint, query, variables)
+      const res = JSON.stringify(data, undefined, 2)
+      console.log(JSON.stringify(data, undefined, 2))
+    } catch (error) {
+      console.error(JSON.stringify(error, undefined, 2))
+      console.log("error!")
+      const res = ""
+    }
+    
+};
+
 export default function Dashboard() {
   
   const { isOpen, onOpen, onClose } = useDisclosure();
+  // const dat = database().catch((error) => console.error(error))
+  // console.log('dat: ', dat)
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent
@@ -81,7 +116,9 @@ export default function Dashboard() {
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4">
-        {/* {children} */}
+        <div> <p> wallet balance </p> </div>
+        <div> <p> 2. Transaction History</p> </div>
+        <div> <p> 3. QR Code</p> </div>
       </Box>
     </Box>
   );
