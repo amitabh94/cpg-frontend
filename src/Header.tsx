@@ -40,7 +40,7 @@ function Header() {
         variant={'link'}
         href={'#'}
         
-        onClick={() => history.push('/Dashboard')}>
+        onClick={() => history.push('/Login')}>
             Merchant Dashboard
         </Button>
         <Button 
