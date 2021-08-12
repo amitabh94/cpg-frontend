@@ -18,28 +18,173 @@ import {
     FormControl,
     FormErrorMessage,
     Box,
-
+    VStack,
+    Text
   } from "@chakra-ui/react"
 import {HStack, Input, Heading, Stack, Button} from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {useForm} from "react-hook-form";
 import {QRCode} from 'react-qrcode-logo';
+import {gql, GraphQLClient} from "graphql-request";
+
+const client = new GraphQLClient("http://localhost:8090/graphql");
+
+interface userInformation{
+  creationDate: Date,
+  entityId: number,
+  merchantId: number,
+  nodeId: string,
+  userId: number,
+  username: string
+}
+
+interface WalletInformation{
+    privateAddress: string,
+    publicAddress: string,
+    cryptocurrencyId: number
+}
+
+async function addUserMutation(username: string, password:string, merchant_id:number){
+  const query = gql`
+  mutation  {
+    createUserAccount(
+      input: {username: "${username}", password: "${password}", merchantId: ${merchant_id}}
+    ) {
+      result
+    }
+  }`;
+  const {
+    createUserAccount: { result },
+  } = await client.request(query);
+  return result;
+}
 
 function Users(){
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [allusersdata, setallusersdata] = useState<userInformation[]>();
+    const [walletData, setWalletData] = useState<WalletInformation[]>();
+    const [withdrawalresponse, setwithdrawalresponse] = useState<string>();
+    const client = new GraphQLClient("http://localhost:8090/graphql");
+    const allUserQuer = gql`
+    query allUserQuery {
+      users {
+        nodes {
+          creationDate
+          entityId
+          merchantId
+          nodeId
+          userId
+          username
+          entity {
+            wallets {
+              nodes {
+                publicAddress
+              }
+            }
+          }
+        }
+      }
+    }
+    `;
 
-    function GenQRCode(val: string){
-        return(
-            <Box color="gray.50">
-            <QRCode value={val}/>
-            </Box>
+    async function getWalletInfo(entity_id: number){
+      const query=gql`
+      query walletQuery {
+        entity(entityId: ${entity_id}) {
+          wallets {
+            nodes {
+              publicAddress
+              cryptocurrencyId
+            }
+          }
+        }
+      }
+      `;
+      let walletInfo = await client.request(query);
+      console.log(walletInfo);
+      setWalletData(walletInfo!.entity.wallets.nodes);
+    }
 
-        );
+    useEffect(() => {
+
+        async function graphQLUserdata() {
+          try{
+            let userResult = await client.request(allUserQuer);
+            console.log(userResult);
+            setallusersdata(userResult!.users.nodes);
+          } catch(e) {
+            console.error(e.message);
+          }
+        }
+        graphQLUserdata();
+    },[allUserQuer]);
+    console.log(allusersdata);
+
+    async function performWithdrawal(merchant_id: number,user_id: number,withdraw_address: string, amount: string, crypto_id: number){
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({merchantId: merchant_id, userId: user_id, withdrawAddress: withdraw_address, amount: amount, cryptocurrencyId: crypto_id })
+      };
+      fetch('http://localhost:8000/user/withdraw', requestOptions)
+      .then(async response => {
+          const isJson = response.headers.get('content-type')?.includes('application/json');
+          const data = isJson && await response.json();
+
+          // check for error response
+          if (!response.ok) {
+              // get error message from body or default to response status
+              const error = (data && data.message) || response.status;
+              setwithdrawalresponse (error.toString());
+              return Promise.reject(error);
+          }
+          console.log("withdrawal success");
+          setwithdrawalresponse("Withdrawal Succesful!");
+      })
+      .catch(error => {
+          console.error('There was an error!', error.toString());
+          setwithdrawalresponse (error.toString());
+      });
+    }
+
+    function DisplayUserSubInfo(userparticulars: userInformation){
+        if(walletData!==undefined){
+          console.log(walletData);
+          return(
+              <Box color="gray.50">
+              <HStack>
+              <VStack>
+              <Text fontSize="xl">User name: {userparticulars.username}</Text>
+              <Text fontSize="xl">Node Id: {userparticulars.nodeId}</Text>
+              <Text fontSize="xl">User Id: {userparticulars.userId}</Text>
+              </VStack>
+              {walletData.map(wallet=>(
+                <VStack>
+                <Text fontSize="xl">Public Address: {wallet!.publicAddress}</Text>
+                <QRCode value={wallet!.publicAddress}/>
+                <Button onClick={()=>performWithdrawal(userparticulars.merchantId, userparticulars.userId, wallet.publicAddress,"0.001",wallet.cryptocurrencyId)}>Withdraw</Button>
+                <Text fontSize="md">{withdrawalresponse}</Text>
+                </VStack>
+
+              ))}
+
+              </HStack>
+              </Box>
+
+          );
+        } else {
+          return(
+            <Text fontSize="xl">Sorry User and Wallet Info unavailable</Text>
+          )
+        }
     }
 
 
-    function AllPlayersList(username: string, email: string){
+    function AllPlayersList(userdata:userInformation[]){
             const [qrstate, setqrstate] = useState(false);
+            // const [qrstring, setqrstring] = useState<string>();
+            const [userparticulars, setuserparticulars] = useState<userInformation>()
+            if(userdata!==undefined) {
             return(
             <div>
             <Table variant="simple">
@@ -47,24 +192,50 @@ function Users(){
                     <Thead>
                         <Tr>
                             <Th>Username</Th>
-                            <Th>email</Th>
+                            <Th>Creation Date</Th>
                         </Tr>
                     </Thead>
-                    <Tbody>
+                    {userdata.map(user => (
+                        <Tbody>
                            <Td>
-                                {username}
+                                {user.username}
                             </Td>
-                            <Td>{email}</Td>
-                            <td><Button onClick={()=>setqrstate(!qrstate)}>Get Player Details</Button></td>
+                            <Td>{user.creationDate}</Td>
+                            <td><Button
+                            onClick={()=>
+                              {setqrstate(!qrstate);
+                                setuserparticulars(user);
+                                getWalletInfo(user.entityId);
+                            }}>Get Player Details</Button></td>
                     </Tbody>
+                    ))}
             </Table>
             {
                 qrstate===true &&
-                    GenQRCode(username)
+                    DisplayUserSubInfo(userparticulars!)
             }
             </div>
-            
         );
+        } else {
+          return(
+            <Table variant="simple">
+                <TableCaption>List of all player contact credentials</TableCaption>
+                    <Thead>
+                        <Tr>
+                            <Th>Username</Th>
+                            <Th>email</Th>
+                        </Tr>
+                    </Thead>      
+                    <Tbody>
+                           <Td>
+                             n/a
+                            </Td>
+                            <Td>n/a</Td>
+                            <td><Button onClick={()=>setqrstate(!qrstate)}>Get Player Details</Button></td>
+                    </Tbody>
+                  </Table>    
+          );
+        }
         
     }
     function ModalFormContent(){
@@ -78,7 +249,7 @@ function Users(){
           function onSubmit(values: any) {
             return new Promise<void>((resolve) => {
               setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
+                addUserMutation(values.Username, values.Password, values.MerchantId);
                 resolve();
               }, 3000);
             });
@@ -104,12 +275,13 @@ function Users(){
                     required: "This is required",})}
                 />
                 </FormControl>
-                <FormControl isInvalid={errors.Email}>
-                <FormLabel htmlFor="email">Email</FormLabel>
+                <FormControl isInvalid={errors.MerchantId}>
+                <FormLabel htmlFor="merchantid">Merchant Id</FormLabel>
                 <Input
-                  id="PlayerEmail"
-                  placeholder="Email"
-                  {...register("Email", {
+                  isNumeric
+                  id="UserMerchantId"
+                  placeholder="Merchant Id"
+                  {...register("MerchantId", {
                     required: "This is required"})}
                 />
                 </FormControl>
@@ -167,7 +339,7 @@ function Users(){
             </div>
         );
     }
-    return (
+    return(
         <div>
             <br/> 
             <Heading as="h3" size="lg"> Users </Heading>
@@ -178,7 +350,7 @@ function Users(){
                     <Input placeholder="username" size="md" />
                     <Input placeholder="email" size="md" />
                 </HStack> */}
-                {AllPlayersList("dummyUsername", "dummy@gmail.com")}
+                {AllPlayersList(allusersdata!)}
                 {AddPlayerModal()}
                 <HStack>
                     <Button 
@@ -188,7 +360,6 @@ function Users(){
                     >
                         Add Player
                     </Button>
-
                 </HStack>
             </Stack>
             <br/>
@@ -196,5 +367,4 @@ function Users(){
     );
     
 }
-
 export default Users;
