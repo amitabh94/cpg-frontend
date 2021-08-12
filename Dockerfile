@@ -3,9 +3,9 @@ FROM node:16.6
 WORKDIR /srv
 
 # Install dependencies
-RUN yarn add serve
 COPY package.json yarn.lock ./
 RUN yarn install
+RUN yarn add serve
 
 # Build and serve
 COPY . .
