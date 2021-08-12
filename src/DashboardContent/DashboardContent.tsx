@@ -47,7 +47,8 @@ import {
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 
-import { query_merchant_wallets, query_merchant_transactions} from '../database/database'
+import { WalletsView } from "./WalletsView";
+import { TransactionHistoryView } from "./TransactionHistoryView"
 
 interface LinkItemProps {
   name: string;
@@ -61,38 +62,10 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Settings', icon: FiSettings },
 ];
 
-async function test() {
-  console.log('function called')
-  const endpoint = 'http://localhost:8090/graphql'
-
-  const query = gql`
-  query MyQuery {
-users(condition: {username: "test-user-1"}) {
-  nodes {
-    username
-    userId
-  }
-}
-}
-  `
-  const variables = {
-    username: 'username',
-  }
-  try {
-      const data = await request(endpoint, query, variables)
-      const res = JSON.stringify(data, undefined, 2)
-      console.log(JSON.stringify(data, undefined, 2))
-    } catch (error) {
-      console.error(JSON.stringify(error, undefined, 2))
-      console.log("error!")
-      const res = ""
-    }
-    
-};
-
 export default function Dashboard() {
-  
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const merchant_id = 1;
   // const dat = database().catch((error) => console.error(error))
   // console.log('dat: ', dat)
   return (
@@ -116,13 +89,17 @@ export default function Dashboard() {
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4">
-        <div> <p> wallet balance </p> </div>
-        <div> <p> 2. Transaction History</p> </div>
+      <h1> <strong>Wallets </strong></h1>
+      <WalletsView merchant_id={merchant_id}/>
+      <h1> <strong>Transaction History </strong></h1>
+      <TransactionHistoryView merchant_id={merchant_id}/>
         <div> <p> 3. QR Code</p> </div>
       </Box>
     </Box>
   );
 }
+
+
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
@@ -148,7 +125,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       {LinkItems.map((link) => (
         <NavItem key={link.name} icon={link.icon}>
           {link.name}
-          
+
         </NavItem>
       ))}
     </Box>
