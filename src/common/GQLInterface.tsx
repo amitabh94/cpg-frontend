@@ -13,6 +13,7 @@ export async function query_merchant_wallets(merchant_id: number): Promise<Merch
         nodes {
           unvalidatedBalance
           validatedBalance
+          publicAddress
           cryptocurrency {
             longname
           }

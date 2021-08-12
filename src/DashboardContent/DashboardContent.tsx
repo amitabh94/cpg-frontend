@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { request, gql } from 'graphql-request'
+import { request, gql } from 'graphql-request';
+
 
 import {useHistory} from "react-router-dom";
 import {
@@ -93,7 +94,6 @@ export default function Dashboard() {
       <WalletsView merchant_id={merchant_id}/>
       <h1> <strong>Transaction History </strong></h1>
       <TransactionHistoryView merchant_id={merchant_id}/>
-        <div> <p> 3. QR Code</p> </div>
       </Box>
     </Box>
   );

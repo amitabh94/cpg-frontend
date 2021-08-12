@@ -2,12 +2,12 @@ export interface MerchantWallets {
   unvalidatedBalance: number;
   validatedBalance: number;
   cryptocurrency: CryptoType;
+  publicAddress: string;
 };
 
 export interface CryptoType {
   longname: string;
 };
-
 
 export interface MerchantTransactions {
   cryptocurrency: CryptoType;
